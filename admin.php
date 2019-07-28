@@ -11,11 +11,14 @@
 	}
 
 	//обновляем POST
-	if (count($POST) > 0)
+	if (count($_POST) > 0)
 	{
 		header("Location: admin.php");
 	}
 
+	// echo "<pre>";
+ //    var_dump($_POST);
+ //    echo "</pre>";
 
 
 	//подключаемся к БД
@@ -30,19 +33,22 @@
     $connection = new PDO($dsn, $user, $pass)  or die ("Ошибка " . mysqli_error($connection));
 	$allComments = $connection->query("SELECT * FROM comments WHERE moderation = 'new' ORDER BY date DESC");
 
+
 	//модерируем посты
 	foreach ($_POST as $num => $checked) {
 		if ($checked == 'ok')
 		{
-			$connection->query("UPDATE comments SET moderation='ok' WHERE id=$num");
-			header("Location: admin.php");
+			$allComments = $connection->query("UPDATE comments SET moderation='ok' WHERE id=$num");
+			//header("Location: admin.php");
 		}
 		else
 		{
-			$connection->query("UPDATE comments SET moderation='rejected' WHERE id=$num");
-			header("Location: admin.php");
+			$allComments = $connection->query("UPDATE comments SET moderation='rejected' WHERE id=$num");
+			//header("Location: admin.php");
 		}
 	}
+
+
 
 
 

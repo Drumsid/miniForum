@@ -1,4 +1,6 @@
-<?php 
+<?php
+	session_start();
+
 	//подключаемся к БД
     $host = 'localhost';
     $db   = 'miniforum';
@@ -19,6 +21,13 @@
     	//$out = "Сообщение получено и будет проверено модератором!";
     	header("Location: " . $_SERVER['REQUEST_URI']);
     }
+
+    //удаляем сообщения форума
+    if ($_GET['del']) {
+    	$id = $_GET['del'];
+    	$connection->query("DELETE FROM comments WHERE id=$id");
+    }
+
 
     // вытаскиваем все посты из бд
     $allComments = $connection->query("SELECT * FROM comments WHERE moderation = 'ok' ORDER BY date DESC");
@@ -54,6 +63,12 @@
 	.hidden-form {
 		display: none;
 	}
+	.link-on {
+		display: block;
+	}
+	.link-off {
+		display: none;
+	}
 </style>
 <body>	
 	<div class="wrap">
@@ -75,13 +90,18 @@
 		<hr>
 		<h4>Все сообщения проходят модерацию</h4>
 		<p>Сообщения от пользователей</p>
-		<?php 
-		//
-		foreach ($allComments as $comment) {
-			echo "<p>Сообщение <b>" . $comment['comment'] . "</b></p> <p>от <b>" . $comment['username'] . "</b></p> <p>дата <b>" . $comment['date'] ."</b></p><hr>";
-		}
-		 ?>
+
+		<?php foreach ($allComments as $comment) : ?>
+			<p>Сообщение <b><?= $comment['comment'] ?></b></p>
+			<p>от <b><?= $comment['username'] ?></b></p>
+			<p>дата <b><?= $comment['date'] ?></b></p>
+			<p class = "<?= $_SESSION['login'] ? 'link-on' : 'link-off'?>"><a href="http://miniforum/index.php?del=<?= $comment['id'] ?>">удалить</a></p>
+			<hr>
+		
+		 <?php endforeach;?>
 	</div>
+
+
 
 	
 </body>
